@@ -12,21 +12,31 @@ class Action extends CI_Controller {
 	}
 	# Function to run a query and echo a json object
 	public function getList(){
-		#putenv('FREETDSCONF=/usr/local/etc/freetds.conf');
-		#$database = $this->load->database('fl',true);
-		#echo "db Loaded...";
-		#$headings = array('first','second','third');
-		#$list[0] = $headings;
+		putenv('FREETDSCONF=/usr/local/etc/freetds.conf');
+		$db1 = $this->load->database('dentrix',true);
+		$headings = array('first','second','third');
+		$list[0] = $headings;
 		#$db1 = $this->getDB();
-		#$rs = $db1->query('SELECT * FROM table');
-		#if($rs){
-		#	foreach($rs->result_array() as $row){
-		#		$list[] = $row;
-		#	}
-		#}
-		#$json = json_encode($list);
-		#echo "$json";
-		echo "hello from action function get list";
+		$rs = $db1->query('
+			SELECT
+				p.FIRSTNAME,
+				p.LASTNAME,
+				p.PATID
+			FROM
+				DDB_PAT as p
+			WHERE
+				p.PATID = 869704
+		');
+		if($rs){
+			foreach($rs->result_array() as $row){
+				$first = $row['FIRSTNAME'];
+				$last  = $row['LASTNAME'];
+				$id    = $row['PATID'];
+				$list[] = array($first,$last,$id);
+			}
+		}
+		$json = json_encode($list);
+		echo "$json";
 	}
 	# function to add a record to a table
 	public function addRecord(){
