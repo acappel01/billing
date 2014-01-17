@@ -35,6 +35,23 @@
 		margin : 5px;
 		padding : 5px;
 	}
+	#returnedList {
+		list-style : none;
+	}
+	#returnedList li {
+		clear : both;
+		height : 45px;
+	}
+	#returnedList li *{
+		float : left;
+		border-style : none;
+	}
+	#returnedList :nth-child(1) *{
+		background : lightblue;
+	}
+	#returnedList li :nth-child(1){ width : 100px; }
+	#returnedList li :nth-child(2){ width : 100px; }
+	#returnedList li :nth-child(3){ width : 100px; }
 </style>
 <script>
 	$(document).ready(function(){
@@ -43,7 +60,17 @@
 			$('#debug').html('Getting List');
 			var target = 'index.php?/action/getList'
 			var request=$.post(target,'',function(data){
-				$('#mainDisplay').html(data);
+				var a = $.parseJSON(data);
+				var rtn = '<ul id="returnedList">';
+				$.each(a,function(){
+					rtn += '<li>'
+					$.each(this,function(){
+						rtn += '<div>'+this+'</div>';
+					});
+					rtn += '</li>'
+				});
+				rtn = rtn + '</ul>';
+				$('#mainDisplay').html(rtn);
 			});
 		});
 	});

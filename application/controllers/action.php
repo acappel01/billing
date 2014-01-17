@@ -12,12 +12,12 @@ class Action extends CI_Controller {
 	}
 	# Function to run a query and echo a json object
 	public function getList(){
-		putenv('FREETDSCONF=/usr/local/etc/freetds.conf');
+		#putenv('FREETDSCONF=/usr/local/etc/freetds.conf');
 		$db1 = $this->load->database('dentrix',true);
 		$headings = array('first','second','third');
 		$list[0] = $headings;
 		#$db1 = $this->getDB();
-		$rs = $db1->query('
+		$rs = $db1->query("
 			SELECT
 				p.FIRSTNAME,
 				p.LASTNAME,
@@ -25,8 +25,8 @@ class Action extends CI_Controller {
 			FROM
 				DDB_PAT as p
 			WHERE
-				p.PATID = 869704
-		');
+				p.FIRSTNAME = 'james'
+		");
 		if($rs){
 			foreach($rs->result_array() as $row){
 				$first = $row['FIRSTNAME'];
