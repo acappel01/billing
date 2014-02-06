@@ -10,34 +10,41 @@ class Action extends CI_Controller {
 #		$database = $this->load->database('default',true);
 #		return $database;
 #	}
+
 	# Function to run a query and echo a json object
 	public function getList(){
 		#putenv('FREETDSCONF=/usr/local/etc/freetds.conf');
 		#$db1 = $this->getDB();
+
+		$file = 'query/ProdClaim.sql';
+		$fh = fopen($file,'r');
+		$query = fread($fh,filesize($file));
+
 		$db1 = $this->load->database('dentrix',true);
-		$headings = array('first','second','third');
+		$headings = array(
+			'ClaimID',
+			'claimDate',
+			'claimAmt'
+		);
 		$list[0] = $headings;
-		$rs = $db1->query("
-			SELECT
-				p.FIRSTNAME,
-				p.LASTNAME,
-				p.PATID
-			FROM
-				DDB_PAT as p
-			WHERE
-				p.FIRSTNAME = 'james'
-		");
+
+		$rs = $db1->query($query);
 		if($rs){
 			foreach($rs->result_array() as $row){
-				$first = $row['FIRSTNAME'];
-				$last  = $row['LASTNAME'];
-				$id    = $row['PATID'];
-				$list[] = array($first,$last,$id);
+				$claimid = $row['CLAIMID'];
+				$claimdate = $row['claimDate'];
+				$claimamt = $row['claimAmt'];
+				$list[] = array(
+					$claimid,
+					$claimdate,
+					$claimamt
+				);
 			}
 		}
 		$json = json_encode($list);
 		echo "$json";
 	}
+
 	# function to add a record to a table
 #	public function addRecord(){
 #		$d1 = $this->input->post('x');

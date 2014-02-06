@@ -6,7 +6,8 @@ class Billing extends CI_Controller {
 	{
 		#phpinfo();
 		echo "<h3>Main Controller</h3>";
-		$data['form'] = $this->load->view('form','',true);
+		# Form views is a sample for input forms not really need at present
+		#$data['form'] = $this->load->view('form','',true);
 		$data['test'] = 'test Data';
 		$this->load->view('home',$data);
 	}
