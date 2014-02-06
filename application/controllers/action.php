@@ -6,17 +6,17 @@ class Action extends CI_Controller {
 		echo "Default return from Action controller";
 		#$this->load->view('name');
 	}
-	public function getDB(){
-		$database = $this->load->database('default',true);
-		return $database;
-	}
+#	public function getDB(){
+#		$database = $this->load->database('default',true);
+#		return $database;
+#	}
 	# Function to run a query and echo a json object
 	public function getList(){
 		#putenv('FREETDSCONF=/usr/local/etc/freetds.conf');
+		#$db1 = $this->getDB();
 		$db1 = $this->load->database('dentrix',true);
 		$headings = array('first','second','third');
 		$list[0] = $headings;
-		#$db1 = $this->getDB();
 		$rs = $db1->query("
 			SELECT
 				p.FIRSTNAME,
@@ -39,12 +39,12 @@ class Action extends CI_Controller {
 		echo "$json";
 	}
 	# function to add a record to a table
-	public function addRecord(){
-		$d1 = $this->input->post('x');
-		$d2 = $this->input->post('y');
-		$db1 = $this->getDB();
-		$db1->query("INSERT INTO table (column1,column2) VALUES ('$d1','$d2')");
-		echo "creating account";
-	}
+#	public function addRecord(){
+#		$d1 = $this->input->post('x');
+#		$d2 = $this->input->post('y');
+#		$db1 = $this->getDB();
+#		$db1->query("INSERT INTO table (column1,column2) VALUES ('$d1','$d2')");
+#		echo "creating account";
+#	}
 
 }

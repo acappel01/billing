@@ -41,7 +41,7 @@
 		if(ele1 == ''){
 			$('#debug').html('bad input');
 		}else{
-			var request=$.post(target,mydata,function(data){
+			var request=$.post(target,formData,function(data){
 				$('#debug').html(data);
 			});
 			thisForm.ename.value = '';

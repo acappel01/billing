@@ -74,6 +74,7 @@
 			});
 		});
 	});
+/*
 	function setup(){
 		var target = 'index.php?/controller/function'
 		$('#viewTables').click(function(){
@@ -90,5 +91,6 @@
 			$(htmlId).html('Post Error ' + error);
 		});
 	}
+*/
 </script>
 </html>
