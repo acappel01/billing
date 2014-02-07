@@ -12,6 +12,9 @@ class Action extends CI_Controller {
 #	}
 
 	# Function to run a query and echo a json object
+	public function add2wh(){
+		$db2 = $this->load->database('warehouse',true);
+	}
 	public function getList(){
 		#putenv('FREETDSCONF=/usr/local/etc/freetds.conf');
 		#$db1 = $this->getDB();
@@ -24,7 +27,20 @@ class Action extends CI_Controller {
 		$headings = array(
 			'ClaimID',
 			'claimDate',
-			'claimAmt'
+			'claimAmt',
+			'PATID',
+			'lastName',
+			'firstName',
+			'subscribID',
+			'medicaid',
+			'Birthdate',
+			'sex',
+			'insurance',
+			'fClass',
+			'procDate',
+			'lineAmt',
+			'code',
+			'clinic'
 		);
 		$list[0] = $headings;
 
@@ -34,10 +50,36 @@ class Action extends CI_Controller {
 				$claimid = $row['CLAIMID'];
 				$claimdate = $row['claimDate'];
 				$claimamt = $row['claimAmt'];
+				$patid = $row['PATID'];
+				$lastname = $row['lastName'];
+				$firstname = $row['firstName'];
+				$subscribid = $row['subscribID'];
+				$medicaid = $row['medicaid'];
+				$birthdate = $row['Birthdate'];
+				$sex = $row['sex'];
+				$insurance = $row['insurance'];
+				$fclass = $row['fClass'];
+				$procdate = $row['procDate'];
+				$lineamt = $row['lineAmt'];
+				$code = $row['code'];
+				$clinic = $row['clinic'];
 				$list[] = array(
 					$claimid,
 					$claimdate,
-					$claimamt
+					$claimamt,
+					$patid,
+					$lastname,
+					$firstname,
+					$subscribid,
+					$medicaid,
+					$birthdate,
+					$sex,
+					$insurance,
+					$fclass,
+					$procdate,
+					$lineamt,
+					$code,
+					$clinic,
 				);
 			}
 		}

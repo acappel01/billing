@@ -49,9 +49,22 @@
 	#returnedList :nth-child(1) *{
 		background : lightblue;
 	}
-	#returnedList li :nth-child(1){ width : 100px; }
-	#returnedList li :nth-child(2){ width : 100px; }
-	#returnedList li :nth-child(3){ width : 100px; }
+	#returnedList li :nth-child(1) { width :  80px; }
+	#returnedList li :nth-child(2) { width : 100px; }
+	#returnedList li :nth-child(3) { width :  80px; }
+	#returnedList li :nth-child(4) { width :  90px; }
+	#returnedList li :nth-child(5) { width : 100px; }
+	#returnedList li :nth-child(6) { width : 100px; }
+	#returnedList li :nth-child(7) { width : 100px; }
+	#returnedList li :nth-child(8) { width :  90px; }
+	#returnedList li :nth-child(9) { width :  90px; }
+	#returnedList li :nth-child(10){ width :  50px; }
+	#returnedList li :nth-child(11){ width : 100px; }
+	#returnedList li :nth-child(12){ width :  50px; }
+	#returnedList li :nth-child(13){ width :  90px; }
+	#returnedList li :nth-child(14){ width :  80px; }
+	#returnedList li :nth-child(15){ width :  80px; }
+	#returnedList li :nth-child(16){ width :  70px; }
 </style>
 <script>
 	$(document).ready(function(){
