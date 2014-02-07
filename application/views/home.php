@@ -8,6 +8,7 @@
 		<div id='mainMenu'>
 			Menu
 			<button id='getList'>GetList</button>
+			<button id='add2wh'>add2wh</button>
 		</div>
 		<div id='mainDisplay'>
 			Display	
@@ -49,18 +50,18 @@
 	#returnedList :nth-child(1) *{
 		background : lightblue;
 	}
-	#returnedList li :nth-child(1) { width :  80px; }
-	#returnedList li :nth-child(2) { width : 100px; }
-	#returnedList li :nth-child(3) { width :  80px; }
-	#returnedList li :nth-child(4) { width :  90px; }
+	#returnedList li :nth-child(1) { width :  70px; }
+	#returnedList li :nth-child(2) { width :  80px; }
+	#returnedList li :nth-child(3) { width :  70px; }
+	#returnedList li :nth-child(4) { width :  70px; }
 	#returnedList li :nth-child(5) { width : 100px; }
 	#returnedList li :nth-child(6) { width : 100px; }
-	#returnedList li :nth-child(7) { width : 100px; }
+	#returnedList li :nth-child(7) { width :  90px; }
 	#returnedList li :nth-child(8) { width :  90px; }
-	#returnedList li :nth-child(9) { width :  90px; }
-	#returnedList li :nth-child(10){ width :  50px; }
-	#returnedList li :nth-child(11){ width : 100px; }
-	#returnedList li :nth-child(12){ width :  50px; }
+	#returnedList li :nth-child(9) { width :  50px; }
+	#returnedList li :nth-child(10){ width : 100px; }
+	#returnedList li :nth-child(11){ width :  50px; }
+	#returnedList li :nth-child(12){ width :  80px; }
 	#returnedList li :nth-child(13){ width :  90px; }
 	#returnedList li :nth-child(14){ width :  80px; }
 	#returnedList li :nth-child(15){ width :  80px; }
@@ -69,6 +70,15 @@
 <script>
 	$(document).ready(function(){
 		//setup();
+//
+		$('#add2wh').click(function(){
+			$('#debug').html('adding to wh');
+			var target = 'index.php?/action/add2wh'
+			var request=$.post(target,'',function(data){
+				$('#mainDisplay').html(data);
+			});
+		});
+//
 		$('#getList').click(function(){
 			$('#debug').html('Getting List');
 			var target = 'index.php?/action/getList'

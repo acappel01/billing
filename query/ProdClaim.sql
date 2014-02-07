@@ -14,6 +14,7 @@ SELECT
 	END AS sex,
 	i.INSCONAME AS insurance,
 	i.FINANCIALCLASS AS fClass,
+	pr.PROC_LOGID AS procID,
 	CAST(pr.PLDATE AS DATE) AS procDate,
 	pr.AMOUNT AS lineAmt,
 	ad.ADACODE AS code,

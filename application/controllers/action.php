@@ -13,7 +13,17 @@ class Action extends CI_Controller {
 
 	# Function to run a query and echo a json object
 	public function add2wh(){
-		$db2 = $this->load->database('warehouse',true);
+		$db2 = $this->load->database('dw',true);
+# Check table for claim
+		$rs = $db2->query("select ClaimID from myclaims where ClaimID = 1973122");
+		$ct = 0;
+		if($rs){
+			foreach($rs->result_array() as $row){
+				$ct++;
+			}
+		}
+# end check
+		echo "checking table $ct";
 	}
 	public function getList(){
 		#putenv('FREETDSCONF=/usr/local/etc/freetds.conf');
@@ -24,6 +34,8 @@ class Action extends CI_Controller {
 		$query = fread($fh,filesize($file));
 
 		$db1 = $this->load->database('dentrix',true);
+		$db2 = $this->load->database('dw',true);
+
 		$headings = array(
 			'ClaimID',
 			'claimDate',
@@ -32,11 +44,11 @@ class Action extends CI_Controller {
 			'lastName',
 			'firstName',
 			'subscribID',
-			'medicaid',
 			'Birthdate',
 			'sex',
 			'insurance',
 			'fClass',
+			'procID',
 			'procDate',
 			'lineAmt',
 			'code',
@@ -59,6 +71,7 @@ class Action extends CI_Controller {
 				$sex = $row['sex'];
 				$insurance = $row['insurance'];
 				$fclass = $row['fClass'];
+				$procid = $row['procID'];
 				$procdate = $row['procDate'];
 				$lineamt = $row['lineAmt'];
 				$code = $row['code'];
@@ -71,18 +84,36 @@ class Action extends CI_Controller {
 					$lastname,
 					$firstname,
 					$subscribid,
-					$medicaid,
 					$birthdate,
 					$sex,
 					$insurance,
 					$fclass,
+					$procid,
 					$procdate,
 					$lineamt,
 					$code,
 					$clinic,
 				);
-			}
+
+# Check table for claim
+		$rs1 = $db2->query("select ClaimID from myclaims where ClaimID = $claimid and procID = $procid");
+		$ct = 0;
+		if($rs1){ foreach($rs1->result_array() as $row1){ $ct++; } }
+		if($ct == 0){
+			# ADD RECORD TO MY Warehouse
+				$rs2 = $db2->query("
+					insert into myclaims (
+						ClaimID,
+						procID
+					) values (
+						$claimid,
+						$procid
+					)
+				");
 		}
+# end check
+			} # end for loop that is reading each record
+		} # end if block for sussesful date pull from dentrix
 		$json = json_encode($list);
 		echo "$json";
 	}
