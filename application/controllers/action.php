@@ -104,10 +104,40 @@ class Action extends CI_Controller {
 				$rs2 = $db2->query("
 					insert into myclaims (
 						ClaimID,
-						procID
+						claimDate,
+						claimAmt,
+						PATID,
+						lastName,
+						firstName,
+						subscribID,
+						medicaid,
+						Birthdate,
+						sex,
+						insurance,
+						fClass,
+						procID,
+						procDate,
+						lineAmt,
+						code,
+						clinic
 					) values (
 						$claimid,
-						$procid
+						'$claimdate',
+						$claimamt,
+						$patid,
+						'$lastname',
+						'$firstname',
+						'$subscribid',
+						'$medicaid',
+						'$birthdate',
+						'$sex',
+						'$insurance',
+						$fclass,
+						$procid,
+						'$procdate',
+						$lineamt,
+						'$code',
+						'$clinic'
 					)
 				");
 		}
