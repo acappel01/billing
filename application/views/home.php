@@ -8,7 +8,7 @@
 		<div id='mainMenu'>
 			Menu
 			<button id='getList'>GetList</button>
-			<button id='add2wh'>add2wh</button>
+			<button id='loadEOB'>LoadEOB</button>
 		</div>
 		<div id='mainDisplay'>
 			Display	
@@ -71,9 +71,8 @@
 	$(document).ready(function(){
 		//setup();
 //
-		$('#add2wh').click(function(){
-			$('#debug').html('adding to wh');
-			var target = 'index.php?/action/add2wh'
+		$('#loadEOB').click(function(){
+			var target = 'index.php?/loadEOB/go'
 			var request=$.post(target,'',function(data){
 				$('#mainDisplay').html(data);
 			});
