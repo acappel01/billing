@@ -42,15 +42,42 @@ class LoadEOB extends CI_Controller {
 		if($this->getE($a[$ln],0) == 'REF'){$ln++;}else{$this->badseg($ln);}
 		if($this->getE($a[$ln],0) == 'LX'){$ln++;}else{$this->badseg($ln);}
 		if($this->getE($a[$ln],0) == 'CLP'){
-			$claim = array();
-			$claim{'echo'} = $this->getE($a[$ln],1);
-			$claim{'tcn'} = $this->getE($a[$ln],7);
-			$claim{'chargeAmount'} = $this->getE($a[$ln],3);
-			$claim{'paidAmount'} = $this->getE($a[$ln],4);
-			$claim{'status'} = $this->getE($a[$ln],2);
+			while($this->getE($a[$ln],0) == 'CLP'){
+				$claim = array();
+				$claim{'echo'} = $this->getE($a[$ln],1);
+				$claim{'tcn'} = $this->getE($a[$ln],7);
+				$claim{'chargeAmount'} = $this->getE($a[$ln],3);
+				$claim{'paidAmount'} = $this->getE($a[$ln],4);
+				$claim{'status'} = $this->getE($a[$ln],2);
+				$ln++;
+				while($this->getE($a[$ln],0) == 'CAS'){
+					if($this->getE($a[$ln],1) == 'CO'){
+						$claim{'adjustmentCode'} = $this->getE($a[$ln],2);
+					}
+					$ln++;
+				}	
+				if($this->getE($a[$ln],0) == 'NM1'){
+					$claim{'lastName'} = $this->getE($a[$ln],3);
+					$claim{'firstName'} = $this->getE($a[$ln],4);
+					$claim{'medicaid'} = $this->getE($a[$ln],9);
+					$ln++;
+				}else{$this->badseg($ln);}
+				while($this->getE($a[$ln],0) == 'NM1'){$ln++;}
+				while($this->getE($a[$ln],0) == 'MIA'){$ln++;}
+				if($this->getE($a[$ln],0) == 'MOA'){
+					$claim{'rarCode'} = $this->getE($a[$ln],3);
+					$ln++;
+				}
+				while($this->getE($a[$ln],0) == 'REF'){
+					if($this->getE($a[$ln],1) == '9A'){
+						$claim{'rateCode'} = $this->getE($a[$ln],2);
+					}
+					$ln++;
+				}
 
-			$check{'claims'}[] = $claim;
-			$ln++;
+				$check{'claims'}[] = $claim;
+				$ln++;
+			}
 		}else{$this->badseg($ln);}
 
 		if($this->getE($a[$ln],0) == 'IEA'){$ln++;}else{$this->badseg($ln);}
@@ -72,6 +99,9 @@ class LoadEOB extends CI_Controller {
 		$claim1chargeAmount = $claim{'chargeAmount'};
 		$claim1paidAmount = $claim{'paidAmount'};
 		$claim1status = $claim{'status'};
+		$claim1lastName = $claim{'lastName'};
+		$claim1firstName = $claim{'firstName'};
+		$claim1medicaid = $claim{'medicaid'};
 		echo "-------------------<br/>";
 		echo "Check Name: $checkName<br/>";
 		echo "Check Date: $checkDate<br/>";
@@ -83,6 +113,9 @@ class LoadEOB extends CI_Controller {
 		echo "Claim1 chargeAmount: $claim1chargeAmount<br/>";
 		echo "Claim1 paidAmount: $claim1paidAmount<br/>";
 		echo "Claim1 status: $claim1status<br/>";
+		echo "Claim1 lastName: $claim1lastName<br/>";
+		echo "Claim1 firstName: $claim1firstName<br/>";
+		echo "Claim1 medicaid: $claim1medicaid<br/>";
 		echo "-------------------<br/>";
 		echo "load complete...";
 	}
