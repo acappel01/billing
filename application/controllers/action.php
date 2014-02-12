@@ -11,6 +11,20 @@ class Action extends CI_Controller {
 #		return $database;
 #	}
 
+	public function getapi(){
+		$a = file_get_contents('http://data.bter.com/api/1/tickers');
+		$b = json_decode($a,true);
+		$keys = array_keys($b);
+		foreach($keys as $line){
+			$last = $b{$line}{'avg'};
+			$pairs = explode('_',$line);
+			$topC = $pairs[0];
+			$botC = $pairs[1];
+			if( $botC == 'btc' ){
+				echo "$topC - $last<br/>";
+			}
+		}
+	}
 	# Function to run a query and echo a json object
 	public function add2wh(){
 		$db2 = $this->load->database('dw',true);
