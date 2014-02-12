@@ -9,6 +9,7 @@
 			Menu
 			<button id='getList'>GetList</button>
 			<button id='loadEOB'>LoadEOB</button>
+			<button id='getTick'>getTick</button>
 		</div>
 		<div id='mainDisplay'>
 			Display	
@@ -70,14 +71,17 @@
 <script>
 	$(document).ready(function(){
 		//setup();
-//
 		$('#loadEOB').click(function(){
 			var target = 'index.php?/loadEOB/go'
 			var request=$.post(target,'',function(data){
 				$('#mainDisplay').html(data);
 			});
 		});
-//
+		$('#getTick').click(function(){
+			$('#debug').html('getting tick');
+			var target = 'index.php?/action/getapi'
+			var request=$.post(target,'',function(data){ $('#mainDisplay').html(data); });
+		});
 		$('#getList').click(function(){
 			$('#debug').html('Getting List');
 			var target = 'index.php?/action/getList'
