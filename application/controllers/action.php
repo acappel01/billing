@@ -12,18 +12,24 @@ class Action extends CI_Controller {
 #	}
 
 	public function getapi(){
+		$mydate = date('Y-m-d');
+		$mytime = date('H:i');
 		$a = file_get_contents('http://data.bter.com/api/1/tickers');
 		$b = json_decode($a,true);
 		$keys = array_keys($b);
+		$db = $this->load->database('ticker',true);
+		$rs = $db->query("insert into bter (lineDate,lineTime) values ('$mydate','$mytime')");
 		foreach($keys as $line){
-			$last = $b{$line}{'avg'};
+			$average = $b{$line}{'avg'};
 			$pairs = explode('_',$line);
 			$topC = $pairs[0];
 			$botC = $pairs[1];
 			if( $botC == 'btc' ){
-				echo "$topC - $last<br/>";
+				$rs = $db->query("update bter set $topC=$average where lineDate='$mydate' and lineTime = '$mytime'");
 			}
 		}
+		echo "data loaded $mydate $mytime\n";
+		#if($rs){ foreach($rs->result_array() as $row){ $claimid = $row['CLAIMID']; } }
 	}
 	# Function to run a query and echo a json object
 	public function add2wh(){
