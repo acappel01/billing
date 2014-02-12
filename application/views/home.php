@@ -77,11 +77,14 @@
 				$('#mainDisplay').html(data);
 			});
 		});
+
 		$('#getTick').click(function(){
 			$('#debug').html('getting tick');
 			var target = 'index.php?/action/getapi'
 			var request=$.post(target,'',function(data){ $('#mainDisplay').html(data); });
 		});
+		$('#getTick').hide();
+
 		$('#getList').click(function(){
 			$('#debug').html('Getting List');
 			var target = 'index.php?/action/getList'
@@ -99,7 +102,9 @@
 				$('#mainDisplay').html(rtn);
 			});
 		});
-	});
+		$('#getList').hide();
+
+	}); // END document.ready funcion
 /*
 	function setup(){
 		var target = 'index.php?/controller/function'
