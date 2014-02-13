@@ -44,9 +44,9 @@ class LoadEOB extends CI_Controller {
 		if($this->getE($a[$ln],0) == 'CLP'){
 			while($this->getE($a[$ln],0) == 'CLP'){
 				$claim = array();
-					# Claim elements that may no be set
-						$claim{'rarCode'} = '';
-						$claim{'rateCode'} = '';
+				# Claim elements that may no be set
+					$claim{'rarCode'} = '';
+					$claim{'rateCode'} = '';
 
 				$claim{'echo'} = $this->getE($a[$ln],1);
 				$claim{'tcn'} = $this->getE($a[$ln],7);
@@ -85,59 +85,122 @@ class LoadEOB extends CI_Controller {
 				while($this->getE($a[$ln],0) == 'DTM'){$ln++;}
 				while($this->getE($a[$ln],0) == 'PER'){$ln++;}
 				while($this->getE($a[$ln],0) == 'AMT'){$ln++;}
+				if($this->getE($a[$ln],0) == 'SVC'){
+					while($this->getE($a[$ln],0) == 'SVC'){
+						$claimLine = array();
 
-		#if($this->getE($a[$ln],0) == 'LX'){$ln++;}else{$this->badseg($ln);}
+						$claimLine{'servAdj'} = ""; # may not be set
+						$claimLine{'capAdd'} = ""; # may not be set
+						$claimLine{'overPay'} = ""; # may not be set
+						$claimLine{'apg'} = ""; # may not be set
+						$claimLine{'maxAllowed'} = ""; # may not be set
+						$claimLine{'apgPaid'} = ""; # may not be set
+						$claimLine{'blendPaid'} = ""; # may not be set
+						$claimLine{'apgWeight'} = ""; # may not be set
+						$claimLine{'apgPercent'} = ""; # may not be set
+						$claimLine{'servRARC'} = ""; # may not be set
 
+						$claimLine{'adaCode'} = explode(":",$this->getE($a[$ln],1));
+						$claimLine{'lineCharge'} = $this->getE($a[$ln],2);
+						$claimLine{'linePaid'} = $this->getE($a[$ln],3);
+						$ln++;
+						if($this->getE($a[$ln],0) == 'DTM'){
+							$claimLine{'serviceDate'} = $this->getE($a[$ln],2);
+							$ln++;
+						}else{$this->badseg($ln);}
+						while($this->getE($a[$ln],0) == 'CAS'){
+							if($this->getE($a[$ln],1) == 'PR'){
+								$claimLine{'servAdj'} = $this->getE($a[$ln],2);
+							}
+							if($this->getE($a[$ln],1) == 'OA'){
+								$claimLine{'servAdj'} = $this->getE($a[$ln],2);
+							}
+							if($this->getE($a[$ln],1) == 'CO'){
+								if($this->getE($a[$ln],2) == '94'){
+									$claimLine{'capAdd'} = $this->getE($a[$ln],3);
+								}
+								if($this->getE($a[$ln],2) == '45'){
+									$claimLine{'overPay'} = $this->getE($a[$ln],3);
+								}
+								if($this->getE($a[$ln],5) == '45'){
+									$claimLine{'overPay'} = $this->getE($a[$ln],6);
+								}
+								if($this->getE($a[$ln],2) <> '45' && $this->getE($a[$ln],2) <> '94'){
+									$claimLine{'servAdj'} = $this->getE($a[$ln],2);
+								}
+							}
+							$ln++;
+						} # end while CAS
+						while($this->getE($a[$ln],0) == 'REF'){
+							if($this->getE($a[$ln],1) == '1S'){
+								$claimLine{'apg'} = $this->getE($a[$ln],2);
+							}
+							$ln++;
+						}
+						while($this->getE($a[$ln],0) == 'AMT'){
+							if($this->getE($a[$ln],1) == 'B6'){
+								$claimLine{'maxAllowed'} = $this->getE($a[$ln],2);
+							}
+							if($this->getE($a[$ln],1) == 'ZK'){
+								$claimLine{'apgPaid'} = $this->getE($a[$ln],2);
+							}
+							if($this->getE($a[$ln],1) == 'ZL'){
+								$claimLine{'blendPaid'} = $this->getE($a[$ln],2);
+							}
+							$ln++;
+						}
+						while($this->getE($a[$ln],0) == 'QTY'){
+							if($this->getE($a[$ln],1) == 'ZK'){
+								$claimLine{'apgWeight'} = $this->getE($a[$ln],2);
+							}
+							if($this->getE($a[$ln],1) == 'ZL'){
+								$claimLine{'apgPercent'} = $this->getE($a[$ln],2);
+							}
+							$ln++;
+						}
+						while($this->getE($a[$ln],0) == 'LQ'){
+							if($this->getE($a[$ln],1) == 'HE'){
+								$claimLine{'servRARC'} = $this->getE($a[$ln],2);
+							}
+							$ln++;
+						}
+						$claim{'claimLines'}[] = $claimLine;
+					}
+				} # END is SVC loop
 				$check{'claims'}[] = $claim;
-				#$ln++;
 			}
 		}else{$this->badseg($ln);} # END CLP Loop
 
+		if($this->getE($a[$ln],0) == 'PLB'){$this->badseg($ln);}
+		if($this->getE($a[$ln],0) == 'SE'){$ln++;}else{$this->badseg($ln);}
+		if($this->getE($a[$ln],0) == 'GE'){$ln++;}else{$this->badseg($ln);}
 		if($this->getE($a[$ln],0) == 'IEA'){$ln++;}else{$this->badseg($ln);}
-		$line = $a[$ln]; echo "x $ln $line<br/>";
 
 		#$db1 = $this->load->database('dentrix',true);
 		#$db2 = $this->load->database('dw',true);
 
 		#$json = json_encode($list);
 		#echo "$json";
-		$checkName = $check{'name'};
-		$checkDate = $check{'date'};
-		$checkAmount = $check{'amount'};
-		$checkNumber = $check{'number'};
-		$checkClaims = $check{'claims'};
-		$claim1 = $check{'claims'}[0];
-		$claim1echo = $claim1{'echo'};
-		$claim1tcn = $claim{'tcn'};
-		$claim1chargeAmount = $claim{'chargeAmount'};
-		$claim1paidAmount = $claim{'paidAmount'};
-		$claim1status = $claim{'status'};
-		$claim1lastName = $claim{'lastName'};
-		$claim1firstName = $claim{'firstName'};
-		$claim1medicaid = $claim{'medicaid'};
-		$claim1rarCode = $claim{'rarCode'};
-		$claim1rateCode = $claim{'rateCode'};
-		$claim1serviceDate = $claim{'serviceDate'};
-	#echo "Claim1 tcn: $claim1tcn<br/>";
+
 		echo "-------------------<br/>";
-		echo "Check Name: $checkName<br/>";
-		echo "Check Date: $checkDate<br/>";
-		echo "Check Amount: $checkAmount<br/>";
-		echo "Check Number: $checkNumber<br/>";
-		#echo "Check Claims: $checkClaims<br/>";
-		echo "Claim1 Echo: $claim1echo<br/>";
-		echo "Claim1 tcn: $claim1tcn<br/>";
-		echo "Claim1 chargeAmount: $claim1chargeAmount<br/>";
-		echo "Claim1 paidAmount: $claim1paidAmount<br/>";
-		echo "Claim1 status: $claim1status<br/>";
-		echo "Claim1 lastName: $claim1lastName<br/>";
-		echo "Claim1 firstName: $claim1firstName<br/>";
-		echo "Claim1 medicaid: $claim1medicaid<br/>";
-		echo "Claim1 rarCode: $claim1rarCode<br/>";
-		echo "Claim1 rateCode: $claim1rateCode<br/>";
-		echo "Claim1 serviceDate: $claim1serviceDate<br/>";
+		$james = array_keys($check{'claims'}[0]);
+		print_r($james);echo "<br/>";
+		$claimList = $check{'claims'};
+		foreach($claimList as $cl){
+			foreach($cl as $cc){
+				echo "$cc :: ";
+			}
+			echo "<br/>";
+			foreach($cl{'claimLines'} as $line){
+				foreach($line as $ele){
+					echo "$ele :: ";
+				}
+				echo "<br/>";
+			}
+			echo "<br/>";
+		}
 		echo "-------------------<br/>";
-		echo "load complete...";
+
 	}
 	function badseg($x){
 		echo "bad seg at $x<br/>";
