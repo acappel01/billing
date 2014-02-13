@@ -44,6 +44,10 @@ class LoadEOB extends CI_Controller {
 		if($this->getE($a[$ln],0) == 'CLP'){
 			while($this->getE($a[$ln],0) == 'CLP'){
 				$claim = array();
+					# Claim elements that may no be set
+						$claim{'rarCode'} = '';
+						$claim{'rateCode'} = '';
+
 				$claim{'echo'} = $this->getE($a[$ln],1);
 				$claim{'tcn'} = $this->getE($a[$ln],7);
 				$claim{'chargeAmount'} = $this->getE($a[$ln],3);
@@ -74,14 +78,23 @@ class LoadEOB extends CI_Controller {
 					}
 					$ln++;
 				}
+				if($this->getE($a[$ln],0) == 'DTM'){
+					$claim{'serviceDate'} = $this->getE($a[$ln],2);
+					$ln++;
+				}else{$this->badseg($ln);}
+				while($this->getE($a[$ln],0) == 'DTM'){$ln++;}
+				while($this->getE($a[$ln],0) == 'PER'){$ln++;}
+				while($this->getE($a[$ln],0) == 'AMT'){$ln++;}
+
+		#if($this->getE($a[$ln],0) == 'LX'){$ln++;}else{$this->badseg($ln);}
 
 				$check{'claims'}[] = $claim;
-				$ln++;
+				#$ln++;
 			}
-		}else{$this->badseg($ln);}
+		}else{$this->badseg($ln);} # END CLP Loop
 
 		if($this->getE($a[$ln],0) == 'IEA'){$ln++;}else{$this->badseg($ln);}
-		$line = $a[$ln]; echo "$line<br/>";
+		$line = $a[$ln]; echo "x $ln $line<br/>";
 
 		#$db1 = $this->load->database('dentrix',true);
 		#$db2 = $this->load->database('dw',true);
@@ -102,6 +115,10 @@ class LoadEOB extends CI_Controller {
 		$claim1lastName = $claim{'lastName'};
 		$claim1firstName = $claim{'firstName'};
 		$claim1medicaid = $claim{'medicaid'};
+		$claim1rarCode = $claim{'rarCode'};
+		$claim1rateCode = $claim{'rateCode'};
+		$claim1serviceDate = $claim{'serviceDate'};
+	#echo "Claim1 tcn: $claim1tcn<br/>";
 		echo "-------------------<br/>";
 		echo "Check Name: $checkName<br/>";
 		echo "Check Date: $checkDate<br/>";
@@ -116,6 +133,9 @@ class LoadEOB extends CI_Controller {
 		echo "Claim1 lastName: $claim1lastName<br/>";
 		echo "Claim1 firstName: $claim1firstName<br/>";
 		echo "Claim1 medicaid: $claim1medicaid<br/>";
+		echo "Claim1 rarCode: $claim1rarCode<br/>";
+		echo "Claim1 rateCode: $claim1rateCode<br/>";
+		echo "Claim1 serviceDate: $claim1serviceDate<br/>";
 		echo "-------------------<br/>";
 		echo "load complete...";
 	}
