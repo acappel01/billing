@@ -72,6 +72,7 @@
 	$(document).ready(function(){
 		//setup();
 		$('#loadEOB').click(function(){
+			$('#mainDisplay').html('loading EOB');
 			var target = 'index.php?/loadEOB/go'
 			var request=$.post(target,'',function(data){
 				$('#mainDisplay').html(data);
