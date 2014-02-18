@@ -21,6 +21,7 @@ class LoadEOB extends CI_Controller {
 		$myDate = substr($date,0,4) . '-' . substr($date,4,2) . '-' . substr($date,6,2);
 		$amount = $mycheck{'amount'};
 		$status = $mycheck{'status'};
+		$claims = $mycheck{'claims'};
 
 		echo "-------------------<br/>";
 		echo "number: $number<br/>";
@@ -38,6 +39,51 @@ class LoadEOB extends CI_Controller {
 				insert into checks (checkNumber,checkDate,checkAmount,status)
 				values ('$number','$myDate',$amount,'$status')
 			");
+			foreach($claims as $claim){
+				$tcn = $claim{'tcn'};
+				$echo = $claim{'echo'};
+				$lastName = $claim{'lastName'};
+				$firstName = $claim{'firstName'};
+				$medicaid = $claim{'medicaid'};
+				$rateCode = $claim{'rateCode'};
+				$chargeAmount = $claim{'chargeAmount'};
+				$paidAmount = $claim{'paidAmount'};
+				$status = $claim{'status'};
+				$adjustmentCode = $claim{'adjustmentCode'};
+				$rarCode = $claim{'rarCode'};
+				$serviceDate = $claim{'serviceDate'};
+				$rs1 = $db2->query("
+					insert into claims (
+						checkNumber,
+						tcn,
+						echo,
+						lastName,
+						firstName,
+						medicaid,
+						rateCode,
+						chargeAmount,
+						paidAmount,
+						Xstatus,
+						adjustmentCode,
+						rarCode,
+						serviceDate
+					) values (
+						'$number',
+						'$tcn',
+						'$echo',
+						'$lastName',
+						'$firstName',
+						'$medicaid',
+						'$rateCode',
+						$chargeAmount,
+						$paidAmount,
+						'$status',
+						'$adjustmentCode',
+						'$rarCode',
+						'$serviceDate'
+					)
+				");
+			}
 		}
 
 		#$json = json_encode($list);
@@ -78,6 +124,7 @@ class LoadEOB extends CI_Controller {
 				$claim = array();
 				$claim{'rarCode'} = ''; # Claim element may no be set
 				$claim{'rateCode'} = '';# Claim element may no be set
+				$claim{'adjustmentCode'} = ''; # Claim element may not be set
 
 				$claim{'echo'} = $this->getE($a[$ln],1);
 				$claim{'tcn'} = $this->getE($a[$ln],7);
