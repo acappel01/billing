@@ -52,6 +52,7 @@ class LoadEOB extends CI_Controller {
 				$adjustmentCode = $claim{'adjustmentCode'};
 				$rarCode = $claim{'rarCode'};
 				$serviceDate = $claim{'serviceDate'};
+	$james = count($claim{'claimLines'});
 				$rs1 = $db2->query("
 					insert into claims (
 						checkNumber,
@@ -66,7 +67,8 @@ class LoadEOB extends CI_Controller {
 						Xstatus,
 						adjustmentCode,
 						rarCode,
-						serviceDate
+						serviceDate,
+						notes
 					) values (
 						'$number',
 						'$tcn',
@@ -80,9 +82,64 @@ class LoadEOB extends CI_Controller {
 						'$status',
 						'$adjustmentCode',
 						'$rarCode',
-						'$serviceDate'
+						'$serviceDate',
+						'$james'
 					)
 				");
+				#loop claim lines and add to claim line table key is tcn
+				$claimLines = $claim{'claimLines'};
+				foreach($claimLines as $line){
+					$lineDate = $line{'serviceDate'};
+					$adaCode = $line{'adaCode'};
+					$lineCharge = $line{'lineCharge'};
+					$linePaid = $line{'linePaid'};
+					$maxAllowed = $line{'maxAllowed'};
+					$apgPaid = $line{'apgPaid'};
+					$blendPaid = $line{'blendPaid'};
+					$apgNumber = $line{'apg'};
+					$apgWeight = $line{'apgWeight'};
+					$apgPercent = $line{'apgPercent'};
+					$lineCARC = $line{'servAdj'};
+					$lineRARC = $line{'servRARC'};
+					$capAddOn = $line{'capAdd'};
+					$overPaid = $line{'overPay'};
+					$rs1 = $db2->query("
+						insert into claimLines (
+							tcn,
+							serviceDate,
+							adaCode,
+							lineBilled,
+							linePaid,
+							maxAllowed,
+							apgPaid,
+							blendPaid,
+							apgNumber,
+							apgWeight,
+							apgPercent,
+							lineCARC,
+							lineRARC,
+							capAddOn,
+							overPaid
+						) values (
+							'$tcn',
+							'$lineDate',
+							'$adaCode',
+							$lineCharge,
+							$linePaid,
+							$maxAllowed,
+							$apgPaid,
+							$blendPaid,
+							$apgNumber,
+							$apgWeight,
+							$apgPercent,
+							'$lineCARC',
+							'$lineRARC',
+							$capAddOn,
+							$overPaid
+						)
+					");
+				}
+				#end claim line enter
 			}
 		}
 
@@ -168,14 +225,14 @@ class LoadEOB extends CI_Controller {
 						$claimLine = array();
 
 						$claimLine{'servAdj'} = ""; # may not be set
-						$claimLine{'capAdd'} = ""; # may not be set
-						$claimLine{'overPay'} = ""; # may not be set
-						$claimLine{'apg'} = ""; # may not be set
-						$claimLine{'maxAllowed'} = ""; # may not be set
-						$claimLine{'apgPaid'} = ""; # may not be set
-						$claimLine{'blendPaid'} = ""; # may not be set
-						$claimLine{'apgWeight'} = ""; # may not be set
-						$claimLine{'apgPercent'} = ""; # may not be set
+						$claimLine{'capAdd'} = 0; # may not be set
+						$claimLine{'overPay'} = 0; # may not be set
+						$claimLine{'apg'} = 0; # may not be set
+						$claimLine{'maxAllowed'} = 0; # may not be set
+						$claimLine{'apgPaid'} = 0; # may not be set
+						$claimLine{'blendPaid'} = 0; # may not be set
+						$claimLine{'apgWeight'} = 0; # may not be set
+						$claimLine{'apgPercent'} = 0; # may not be set
 						$claimLine{'servRARC'} = ""; # may not be set
 
 						$tempAda = explode(":",$this->getE($a[$ln],1));
