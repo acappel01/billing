@@ -23,6 +23,9 @@ class LoadEOB extends CI_Controller {
 		$status = $mycheck{'status'};
 		$claims = $mycheck{'claims'};
 
+		$saveFile = fopen("EOB/loaded/$number.x12",'w');
+		fwrite($saveFile,$EOB);
+
 		echo "-------------------<br/>";
 		echo "number: $number<br/>";
 		echo "mydate: $myDate<br/>";
@@ -34,7 +37,7 @@ class LoadEOB extends CI_Controller {
 		$db2 = $this->load->database('dw',true);
 		$rs = $db2->query("select checkNumber from checks where checkNumber = '$number'");
 		$ct = 0; if($rs){ foreach($rs->result_array() as $row){echo "add $ct"; $ct++; } }
-		if($ct == 0){
+		if($ct == 0 && $status == 'OK'){
 			$rs = $db2->query("
 				insert into checks (checkNumber,checkDate,checkAmount,status)
 				values ('$number','$myDate',$amount,'$status')
@@ -52,7 +55,6 @@ class LoadEOB extends CI_Controller {
 				$adjustmentCode = $claim{'adjustmentCode'};
 				$rarCode = $claim{'rarCode'};
 				$serviceDate = $claim{'serviceDate'};
-	$james = count($claim{'claimLines'});
 				$rs1 = $db2->query("
 					insert into claims (
 						checkNumber,
@@ -67,8 +69,7 @@ class LoadEOB extends CI_Controller {
 						Xstatus,
 						adjustmentCode,
 						rarCode,
-						serviceDate,
-						notes
+						serviceDate
 					) values (
 						'$number',
 						'$tcn',
@@ -82,11 +83,12 @@ class LoadEOB extends CI_Controller {
 						'$status',
 						'$adjustmentCode',
 						'$rarCode',
-						'$serviceDate',
-						'$james'
+						'$serviceDate'
 					)
 				");
 				#loop claim lines and add to claim line table key is tcn
+#start adding claim lines
+			if(isset($claim{'claimLines'})){
 				$claimLines = $claim{'claimLines'};
 				foreach($claimLines as $line){
 					$lineDate = $line{'serviceDate'};
@@ -105,6 +107,7 @@ class LoadEOB extends CI_Controller {
 					$overPaid = $line{'overPay'};
 					$rs1 = $db2->query("
 						insert into claimLines (
+							checkNumber,
 							tcn,
 							serviceDate,
 							adaCode,
@@ -121,6 +124,7 @@ class LoadEOB extends CI_Controller {
 							capAddOn,
 							overPaid
 						) values (
+							'$number',
 							'$tcn',
 							'$lineDate',
 							'$adaCode',
@@ -138,10 +142,10 @@ class LoadEOB extends CI_Controller {
 							$overPaid
 						)
 					");
-				}
-				#end claim line enter
-			}
-		}
+				} #end claim line enter
+			} # close check to see if there are claim lines
+			} # end add claim
+		} # end if status ok
 
 		#$json = json_encode($list);
 		#echo "$json";
@@ -196,8 +200,13 @@ class LoadEOB extends CI_Controller {
 					$ln++;
 				}	
 				if($this->getE($a[$ln],0) == 'NM1'){
-					$claim{'lastName'} = $this->getE($a[$ln],3);
-					$claim{'firstName'} = $this->getE($a[$ln],4);
+
+					$claim{'lastName'}  = str_replace("'","",$this->getE($a[$ln],3));
+					$claim{'firstName'} = str_replace("'","",$this->getE($a[$ln],4));
+
+					#$claim{'lastName'} = $this->getE($a[$ln],3);
+					#$claim{'firstName'} = $this->getE($a[$ln],4);
+
 					$claim{'medicaid'} = $this->getE($a[$ln],9);
 					$ln++;
 				}else{$this->badseg($ln); $check{'status'} = 'NO';}
@@ -302,7 +311,8 @@ class LoadEOB extends CI_Controller {
 						}
 						$claim{'claimLines'}[] = $claimLine;
 					}
-				} # END is SVC loop
+				#}else{$this->badseg($ln); $check{'status'} = 'NO';} # END SVC Loop
+				} # END SVC Loop
 				$check{'claims'}[] = $claim;
 			}
 		}else{$this->badseg($ln); $check{'status'} = 'NO';} # END CLP Loop
