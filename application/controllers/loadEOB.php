@@ -21,6 +21,7 @@ class LoadEOB extends CI_Controller {
 		$myDate = substr($date,0,4) . '-' . substr($date,4,2) . '-' . substr($date,6,2);
 		$amount = $mycheck{'amount'};
 		$status = $mycheck{'status'};
+		$checkAdjust = $mycheck{'adjustment'};
 		$claims = $mycheck{'claims'};
 
 		$saveFile = fopen("EOB/loaded/$number.x12",'w');
@@ -39,8 +40,8 @@ class LoadEOB extends CI_Controller {
 		$ct = 0; if($rs){ foreach($rs->result_array() as $row){echo "add $ct"; $ct++; } }
 		if($ct == 0 && $status == 'OK'){
 			$rs = $db2->query("
-				insert into checks (checkNumber,checkDate,checkAmount,status)
-				values ('$number','$myDate',$amount,'$status')
+				insert into checks (checkNumber,checkDate,checkAmount,status,adjustment)
+				values ('$number','$myDate',$amount,'$status','$checkAdjust')
 			");
 			foreach($claims as $claim){
 				$tcn = $claim{'tcn'};
@@ -155,6 +156,7 @@ class LoadEOB extends CI_Controller {
 		#Function takes EOB file array and converts to EOB object
 		$ln = 0;
 		$check{'status'} = 'OK';
+		$check{'adjustment'} = '';
 		$check{'claims'} = array();
 		
 		if($this->getE($a[$ln],0) == 'ISA'){$ln++;}else{$this->badseg($ln); $check{'status'} = 'NO'; $check{'status'} = 'NO';}
@@ -317,7 +319,10 @@ class LoadEOB extends CI_Controller {
 			}
 		}else{$this->badseg($ln); $check{'status'} = 'NO';} # END CLP Loop
 
-		if($this->getE($a[$ln],0) == 'PLB'){$this->badseg($ln); $check{'status'} = 'NO';}
+		if($this->getE($a[$ln],0) == 'PLB'){
+			$check{'adjustment'} = $a[$ln];
+			$ln++;
+		}
 		if($this->getE($a[$ln],0) == 'SE'){$ln++;}else{$this->badseg($ln); $check{'status'} = 'NO';}
 		if($this->getE($a[$ln],0) == 'GE'){$ln++;}else{$this->badseg($ln); $check{'status'} = 'NO';}
 		if($this->getE($a[$ln],0) == 'IEA'){$ln++;}else{$this->badseg($ln); $check{'status'} = 'NO';}
