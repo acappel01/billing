@@ -10,6 +10,7 @@
 			<button id='getList'>GetList</button>
 			<button id='loadEOB'>LoadEOB</button>
 			<button id='getTick'>getTick</button>
+			<button id='readX12'>getTick</button>
 		</div>
 		<div id='mainDisplay'>
 			Display	
@@ -71,6 +72,14 @@
 <script>
 	$(document).ready(function(){
 		//setup();
+		$('#readX12').click(function(){
+			$('#mainDisplay').html('reading X12');
+			var target = 'index.php?/action/readX12'
+			var request=$.post(target,'',function(data){
+				$('#mainDisplay').html(data);
+			});
+		});
+		
 		$('#loadEOB').click(function(){
 			$('#mainDisplay').html('loading EOB');
 			var target = 'index.php?/loadEOB/go'
@@ -78,6 +87,7 @@
 				$('#mainDisplay').html(data);
 			});
 		});
+		$('#loadEOB').hide();
 
 		$('#getTick').click(function(){
 			$('#debug').html('getting tick');
