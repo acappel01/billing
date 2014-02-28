@@ -10,7 +10,39 @@ class Action extends CI_Controller {
 #		$database = $this->load->database('default',true);
 #		return $database;
 #	}
-
+	function getE($line,$i){
+		$r = explode("*",$line);
+		if(count($r)>$i){return $r[$i];}else{return false;}
+	}
+	public function readX12(){
+		echo "getting ready to X12...<br/>";
+		$file = 'X12/d.x12';
+		$fh = fopen($file,'r');
+		$data = fread($fh,filesize($file));
+		$claims = explode("~",$data);
+		echo "got file as array...<br/>";
+		$ln = 0;
+		$myTrans = array();
+		#foreach($claims as $claim){ echo "$claim<br/>"; }
+		if($this->getE($data,0)=='ISA'){
+			$myTrans{'id'} = $this->getE($data,13);
+			$x = $claims[$ln];
+			echo "$x<br/>";
+			$ln++;
+		}
+		if($this->getE($data,0)=='IEA'){ $x = $claims[$ln]; echo "$x<br/>"; }else{ $this->xerror($claims,$ln); }
+		echo "-----------------<br/>";
+		echo "printing Trans<br/>";
+		$id = $myTrans{'id'};
+		echo "printing Trans<br/>";
+		echo "Id is $id<br/>";
+	}
+	public function xerror($claims,$ln){
+		$x = $claims[$ln];
+		echo "bad segment at $ln<br/>";
+		echo "$x<br/>";
+		echo "--------------<br/>";
+	}
 	public function getapi(){
 		$mydate = date('Y-m-d');
 		$mytime = date('H:i');
@@ -28,6 +60,12 @@ class Action extends CI_Controller {
 				$rs = $db->query("update bter set $topC=$average where lineDate='$mydate' and lineTime = '$mytime'");
 			}
 		}
+		# get btc price
+		$jsonbtc = file_get_contents('https://coinbase.com/api/v1/prices/sell');
+		$z = json_decode($jsonbtc,true);
+		$btc_price = $z{'amount'};
+		$rs = $db->query("update bter set btc=$btc_price where lineDate='$mydate' and lineTime = '$mytime'");
+		# end btc price
 		echo "data loaded $mydate $mytime\n";
 		#if($rs){ foreach($rs->result_array() as $row){ $claimid = $row['CLAIMID']; } }
 	}
