@@ -39,6 +39,26 @@ class Action extends CI_Controller {
 		}else{ $this->xerror($claims,$ln); }
 		if($this->getE($claims[$ln],0)=='BHT'){ $ln++; }else{ $this->xerror($claims,$ln); }
 		if($this->getE($claims[$ln],0)=='NM1'){ $ln++; }else{ $this->xerror($claims,$ln); }
+		if($this->getE($claims[$ln],0)=='PER'){ $ln++; }else{ $this->xerror($claims,$ln); }
+		if($this->getE($claims[$ln],0)=='NM1'){ $ln++; }else{ $this->xerror($claims,$ln); }
+		if($this->getE($claims[$ln],0)=='HL'){ $ln++; }else{ $this->xerror($claims,$ln); }
+		if($this->getE($claims[$ln],0)=='NM1'){ $ln++; }else{ $this->xerror($claims,$ln); }
+		if($this->getE($claims[$ln],0)=='N3'){ $ln++; }else{ $this->xerror($claims,$ln); }
+		if($this->getE($claims[$ln],0)=='N4'){ $ln++; }else{ $this->xerror($claims,$ln); }
+		if($this->getE($claims[$ln],0)=='REF'){ $ln++; }else{ $this->xerror($claims,$ln); }
+		#LOOP through claims
+		$myTrans{'claimList'} = array();
+		while($this->getE($claims[$ln],0)=='HL'){
+			$currentClaim = array();
+			$ln++;
+			if($this->getE($claims[$ln],0)=='SBR'){ $ln++; }else{ $this->xerror($claims,$ln); }
+			if($this->getE($claims[$ln],0)=='NM1'){
+				$currentClaim{'first'} = $this->getE($claims[$ln],3);
+				$ln++;
+			}else{ $this->xerror($claims,$ln); }
+			$myTrans{'claimList'}[] = $currentClaim;
+		}
+		#END claim loop
 
 		if($this->getE($claims[$ln],0)=='IEA'){ $ln++; }else{ $this->xerror($claims,$ln); }
 
@@ -50,11 +70,16 @@ class Action extends CI_Controller {
 
 		$GSid = $thing{'GSid'};
 		$STid = $thing{'STid'};
+		$claims = $thing{'claimList'};
+
+		$first = $claims[0]{'first'};
 
 		echo "-----------------<br/>";
 		echo "printing Trans<br/>";
 		echo "GSid is $GSid<br/>";
 		echo "STid is $STid<br/>";
+		echo "-----------------<br/>";
+		echo "fist $first<br/>";
 		echo "-----------------<br/>";
 
 	}
