@@ -24,18 +24,39 @@ class Action extends CI_Controller {
 		$ln = 0;
 		$myTrans = array();
 		#foreach($claims as $claim){ echo "$claim<br/>"; }
-		if($this->getE($data,0)=='ISA'){
-			$myTrans{'id'} = $this->getE($data,13);
-			$x = $claims[$ln];
-			echo "$x<br/>";
+
+		# READ X12 FILE
+
+		if($this->getE($claims[$ln],0)=='ISA'){
+			$myTrans{'GSid'} = $this->getE($claims[$ln],13);
 			$ln++;
-		}
-		if($this->getE($data,0)=='IEA'){ $x = $claims[$ln]; echo "$x<br/>"; }else{ $this->xerror($claims,$ln); }
+		}else{ $this->xerror($claims,$ln); }
+
+		if($this->getE($claims[$ln],0)=='GS'){ $ln++; }else{ $this->xerror($claims,$ln); }
+		if($this->getE($claims[$ln],0)=='ST'){ 
+			$myTrans{'STid'} = $this->getE($claims[$ln],2);
+			$ln++;
+		}else{ $this->xerror($claims,$ln); }
+		if($this->getE($claims[$ln],0)=='BHT'){ $ln++; }else{ $this->xerror($claims,$ln); }
+		if($this->getE($claims[$ln],0)=='NM1'){ $ln++; }else{ $this->xerror($claims,$ln); }
+
+		if($this->getE($claims[$ln],0)=='IEA'){ $ln++; }else{ $this->xerror($claims,$ln); }
+
+		# END READ X12 FILE
+		$this->showTransfile($myTrans);
+
+	}
+	public function showTransfile($thing){
+
+		$GSid = $thing{'GSid'};
+		$STid = $thing{'STid'};
+
 		echo "-----------------<br/>";
 		echo "printing Trans<br/>";
-		$id = $myTrans{'id'};
-		echo "printing Trans<br/>";
-		echo "Id is $id<br/>";
+		echo "GSid is $GSid<br/>";
+		echo "STid is $STid<br/>";
+		echo "-----------------<br/>";
+
 	}
 	public function xerror($claims,$ln){
 		$x = $claims[$ln];
