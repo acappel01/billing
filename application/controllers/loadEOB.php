@@ -23,6 +23,7 @@ class LoadEOB extends CI_Controller {
 		$status = $mycheck{'status'};
 		$checkAdjust = $mycheck{'adjustment'};
 		$claims = $mycheck{'claims'};
+		$claimCount = sizeof($claims);
 
 		$saveFile = fopen("EOB/loaded/$number.x12",'w');
 		fwrite($saveFile,$EOB);
@@ -32,6 +33,7 @@ class LoadEOB extends CI_Controller {
 		echo "mydate: $myDate<br/>";
 		echo "amount: $amount<br/>";
 		echo "status: $status<br/>";
+		echo "claims: $claimCount<br/>";
 		echo "-------------------<br/>";
 
 		#$db1 = $this->load->database('dentrix',true);
@@ -43,6 +45,8 @@ class LoadEOB extends CI_Controller {
 				insert into checks (checkNumber,checkDate,checkAmount,status,adjustment)
 				values ('$number','$myDate',$amount,'$status','$checkAdjust')
 			");
+/*
+*/
 			foreach($claims as $claim){
 				$tcn = $claim{'tcn'};
 				$echo = $claim{'echo'};
