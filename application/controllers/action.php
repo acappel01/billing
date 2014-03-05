@@ -54,8 +54,31 @@ class Action extends CI_Controller {
 			if($this->getE($claims[$ln],0)=='SBR'){ $ln++; }else{ $this->xerror($claims,$ln); }
 			if($this->getE($claims[$ln],0)=='NM1'){
 				$currentClaim{'first'} = $this->getE($claims[$ln],3);
+				$currentClaim{'last'} = $this->getE($claims[$ln],4);
+				$currentClaim{'medicaid'} = $this->getE($claims[$ln],9);
 				$ln++;
 			}else{ $this->xerror($claims,$ln); }
+			if($this->getE($claims[$ln],0)=='DMG'){
+				$currentClaim{'birthdate'} = $this->getE($claims[$ln],2);
+				$currentClaim{'gender'} = $this->getE($claims[$ln],3);
+				$ln++;
+			}else{ $this->xerror($claims,$ln); }
+			if($this->getE($claims[$ln],0)=='NM1'){ $ln++; }else{ $this->xerror($claims,$ln); }
+			if($this->getE($claims[$ln],0)=='CLM'){
+				$currentClaim{'echo'} = $this->getE($claims[$ln],1);
+				$currentClaim{'billedAmt'} = $this->getE($claims[$ln],2);
+				$ln++;
+			}else{ $this->xerror($claims,$ln); }
+			if($this->getE($claims[$ln],0)=='DTP'){
+				$currentClaim{'claimDate'} = $this->getE($claims[$ln],3);
+				$ln++;
+			}else{ $this->xerror($claims,$ln); }
+			if($this->getE($claims[$ln],0)=='REF'){
+				$currentClaim{'preAuth'} = $this->getE($claims[$ln],2);
+				$ln++;
+			}else{ $this->xerror($claims,$ln); }
+			if($this->getE($claims[$ln],0)=='LX'){ $ln++; }else{ $this->xerror($claims,$ln); }
+
 			$myTrans{'claimList'}[] = $currentClaim;
 		}
 		#END claim loop
@@ -72,19 +95,32 @@ class Action extends CI_Controller {
 		$STid = $thing{'STid'};
 		$claims = $thing{'claimList'};
 
-		$first = $claims[0]{'first'};
+		$first 		= $claims[0]{'first'};
+		$last 		= $claims[0]{'last'};
+		$medicaid 	= $claims[0]{'medicaid'};
+		$birth	 	= $claims[0]{'birthdate'};
+		$birthdate 	= substr($birth,0,4).'-'.substr($birth,4,2).'-'.substr($birth,6,2);
+		$gender 	= $claims[0]{'gender'};
+		$echo 		= $claims[0]{'echo'};
+		$billedAmt 	= $claims[0]{'billedAmt'};
+		$clmdate 	= $claims[0]{'claimDate'};
+		$claimdate 	= substr($clmdate,0,4).'-'.substr($clmdate,4,2).'-'.substr($clmdate,6,2);
+		$preauth 	= $claims[0]{'preAuth'};
 
 		echo "-----------------<br/>";
 		echo "printing Trans<br/>";
 		echo "GSid is $GSid<br/>";
 		echo "STid is $STid<br/>";
 		echo "-----------------<br/>";
-		echo "fist $first<br/>";
+		echo "first=$first, last=$last, medicaid=$medicaid, birthdate=$birthdate, gender=$gender<br/>";
+		echo "echo=$echo, billedAmt=$billedAmt, claimdate=$claimdate, preauth=$preauth<br/>";
 		echo "-----------------<br/>";
 
 	}
 	public function xerror($claims,$ln){
 		$x = $claims[$ln];
+		$y = $claims[$ln-1];
+		echo "privous segment<br/>$y<br/>";
 		echo "bad segment at $ln<br/>";
 		echo "$x<br/>";
 		echo "--------------<br/>";
