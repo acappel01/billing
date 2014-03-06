@@ -76,14 +76,25 @@ class Action extends CI_Controller {
 			if($this->getE($claims[$ln],0)=='REF'){
 				$currentClaim{'preAuth'} = $this->getE($claims[$ln],2);
 				$ln++;
-			}else{ $this->xerror($claims,$ln); }
-			if($this->getE($claims[$ln],0)=='LX'){ $ln++; }else{ $this->xerror($claims,$ln); }
+			}#else{ $this->xerror($claims,$ln); }
+			while($this->getE($claims[$ln],0)=='LX'){
+				$claimLines = array();
+				$ln++;
+				if($this->getE($claims[$ln],0)=='SV3'){
+					$claimLines{'adacode'} = $this->getE($claims[$ln],1);
+					$claimLines{'lineAmt'} = $this->getE($claims[$ln],2);
+					$ln++;
+				}else{ $this->xerror($claims,$ln); }
+				$currentClaim{'claimLines'}[] = $claimLines;
+			}
 
 			$myTrans{'claimList'}[] = $currentClaim;
 		}
 		#END claim loop
-
+		if($this->getE($claims[$ln],0)=='SE'){ $ln++; }else{ $this->xerror($claims,$ln); }
+		if($this->getE($claims[$ln],0)=='GE'){ $ln++; }else{ $this->xerror($claims,$ln); }
 		if($this->getE($claims[$ln],0)=='IEA'){ $ln++; }else{ $this->xerror($claims,$ln); }
+		echo "have claim file...<br/>";
 
 		# END READ X12 FILE
 		$this->showTransfile($myTrans);
@@ -91,8 +102,8 @@ class Action extends CI_Controller {
 	}
 	public function showTransfile($thing){
 
-		$GSid = $thing{'GSid'};
-		$STid = $thing{'STid'};
+		$GSid 	= $thing{'GSid'};
+		$STid 	= $thing{'STid'};
 		$claims = $thing{'claimList'};
 
 		$first 		= $claims[0]{'first'};
@@ -106,7 +117,11 @@ class Action extends CI_Controller {
 		$clmdate 	= $claims[0]{'claimDate'};
 		$claimdate 	= substr($clmdate,0,4).'-'.substr($clmdate,4,2).'-'.substr($clmdate,6,2);
 		$preauth 	= $claims[0]{'preAuth'};
+		$claimLines = $claims[0]{'claimLines'};
 
+		$adacode = $claimLines[0]{'adacode'};
+		$lineAmt = $claimLines[0]{'lineAmt'};
+		
 		echo "-----------------<br/>";
 		echo "printing Trans<br/>";
 		echo "GSid is $GSid<br/>";
@@ -114,6 +129,7 @@ class Action extends CI_Controller {
 		echo "-----------------<br/>";
 		echo "first=$first, last=$last, medicaid=$medicaid, birthdate=$birthdate, gender=$gender<br/>";
 		echo "echo=$echo, billedAmt=$billedAmt, claimdate=$claimdate, preauth=$preauth<br/>";
+		echo "adacode=$adacode, lineAmt=$lineAmt<br/>";
 		echo "-----------------<br/>";
 
 	}
