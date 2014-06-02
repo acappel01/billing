@@ -50,6 +50,7 @@ class Action extends CI_Controller {
 		$myTrans{'claimList'} = array();
 		while($this->getE($claims[$ln],0)=='HL'){
 			$currentClaim = array();
+			$currentClaim{'preAuth'} = '';
 			$ln++;
 			if($this->getE($claims[$ln],0)=='SBR'){ $ln++; }else{ $this->xerror($claims,$ln); }
 			if($this->getE($claims[$ln],0)=='NM1'){
@@ -106,30 +107,57 @@ class Action extends CI_Controller {
 		$STid 	= $thing{'STid'};
 		$claims = $thing{'claimList'};
 
-		$first 		= $claims[0]{'first'};
-		$last 		= $claims[0]{'last'};
-		$medicaid 	= $claims[0]{'medicaid'};
-		$birth	 	= $claims[0]{'birthdate'};
-		$birthdate 	= substr($birth,0,4).'-'.substr($birth,4,2).'-'.substr($birth,6,2);
-		$gender 	= $claims[0]{'gender'};
-		$echo 		= $claims[0]{'echo'};
-		$billedAmt 	= $claims[0]{'billedAmt'};
-		$clmdate 	= $claims[0]{'claimDate'};
-		$claimdate 	= substr($clmdate,0,4).'-'.substr($clmdate,4,2).'-'.substr($clmdate,6,2);
-		$preauth 	= $claims[0]{'preAuth'};
-		$claimLines = $claims[0]{'claimLines'};
+		$db2 = $this->load->database('dw',true);
 
-		$adacode = $claimLines[0]{'adacode'};
-		$lineAmt = $claimLines[0]{'lineAmt'};
+		$rs = $db2->query("select gsId from sentClaims where gsId = '$GSid'");
+		$ct = 0;
+		if($rs){
+			foreach($rs->result_array() as $row){
+				$ct++;
+			}
+		}
+		if($ct == 0){
+			foreach($claims as $claim){
+				$first = $claim{'first'}; $last = $claim{'last'}; $medicaid = $claim{'medicaid'};
+				$birth = $claim{'birthdate'};
+				$birthdate = substr($birth,0,4).'-'.substr($birth,4,2).'-'.substr($birth,6,2);
+				$gender = $claim{'gender'}; $echo = $claim{'echo'}; $billedAmt = $claim{'billedAmt'};
+				$clmdate = $claim{'claimDate'};
+				$claimdate = substr($clmdate,0,4).'-'.substr($clmdate,4,2).'-'.substr($clmdate,6,2);
+				$preauth = $claim{'preAuth'};
+				$rs = $db2->query("insert into sentClaims (
+						gsId, stId, firstName, lastName, medicaid, birthdate,
+						gender, echo, billedAmt, claimDate, preAuth
+					) values (
+						'$GSid', '$STid', '$first', '$last', '$medicaid', '$birthdate',
+						'$gender', '$echo', $billedAmt, '$claimdate', '$preauth'
+					)
+				");
+				#drop claim lines
+				$claimLines = $claim{'claimLines'};
+				foreach($claimLines as $line){
+					$adacode = $line{'adacode'};
+					$lineAmt = $line{'lineAmt'};
+					$rs = $db2->query("insert into sentClaimLines (
+							gsId,stId,echo,adacode,lineAmt
+						) values (
+							'$GSid','$STid','$echo','$adacode',$lineAmt
+						)
+					");
+				}
+			}
+		}
+
+
 		
 		echo "-----------------<br/>";
 		echo "printing Trans<br/>";
 		echo "GSid is $GSid<br/>";
 		echo "STid is $STid<br/>";
 		echo "-----------------<br/>";
-		echo "first=$first, last=$last, medicaid=$medicaid, birthdate=$birthdate, gender=$gender<br/>";
-		echo "echo=$echo, billedAmt=$billedAmt, claimdate=$claimdate, preauth=$preauth<br/>";
-		echo "adacode=$adacode, lineAmt=$lineAmt<br/>";
+		#echo "first=$first, last=$last, medicaid=$medicaid, birthdate=$birthdate, gender=$gender<br/>";
+		#echo "echo=$echo, billedAmt=$billedAmt, claimdate=$claimdate, preauth=$preauth<br/>";
+		#echo "adacode=$adacode, lineAmt=$lineAmt<br/>";
 		echo "-----------------<br/>";
 
 	}

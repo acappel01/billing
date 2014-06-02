@@ -10,7 +10,7 @@
 			<button id='getList'>GetList</button>
 			<button id='loadEOB'>LoadEOB</button>
 			<button id='getTick'>getTick</button>
-			<button id='readX12'>getTick</button>
+			<button id='readX12'>read837</button>
 		</div>
 		<div id='mainDisplay'>
 			Display	
