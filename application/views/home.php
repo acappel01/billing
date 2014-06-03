@@ -79,6 +79,7 @@
 				$('#mainDisplay').html(data);
 			});
 		});
+		$('#readX12').hide();
 		
 		$('#loadEOB').click(function(){
 			$('#mainDisplay').html('loading EOB');
@@ -87,7 +88,6 @@
 				$('#mainDisplay').html(data);
 			});
 		});
-		$('#loadEOB').hide();
 
 		$('#getTick').click(function(){
 			$('#debug').html('getting tick');
