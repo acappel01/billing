@@ -40,6 +40,7 @@ class LoadEOB extends CI_Controller {
 		$db2 = $this->load->database('dw',true);
 		$rs = $db2->query("select checkNumber from checks where checkNumber = '$number'");
 		$ct = 0; if($rs){ foreach($rs->result_array() as $row){echo "add $ct"; $ct++; } }
+
 		if($ct == 0 && $status == 'OK'){
 			$rs = $db2->query("
 				insert into checks (checkNumber,checkDate,checkAmount,status,adjustment)
@@ -181,9 +182,9 @@ class LoadEOB extends CI_Controller {
 		if($this->getE($a[$ln],0) == 'N1'){$ln++;}else{$this->badseg($ln); $check{'status'} = 'NO';}
 		if($this->getE($a[$ln],0) == 'N3'){$ln++;}else{$this->badseg($ln); $check{'status'} = 'NO';}
 		if($this->getE($a[$ln],0) == 'N4'){$ln++;}else{$this->badseg($ln); $check{'status'} = 'NO';}
-		if($this->getE($a[$ln],0) == 'PER'){$ln++;}else{$this->badseg($ln); $check{'status'} = 'NO';}
+		if($this->getE($a[$ln],0) == 'PER'){$ln++;}#else{$this->badseg($ln); $check{'status'} = 'NO';}
 		if($this->getE($a[$ln],0) == 'N1'){$ln++;}else{$this->badseg($ln); $check{'status'} = 'NO';}
-		if($this->getE($a[$ln],0) == 'N4'){$ln++;}else{$this->badseg($ln); $check{'status'} = 'NO';}
+		if($this->getE($a[$ln],0) == 'N4'){$ln++;}#else{$this->badseg($ln); $check{'status'} = 'NO';}
 		if($this->getE($a[$ln],0) == 'REF'){$ln++;}else{$this->badseg($ln); $check{'status'} = 'NO';}
 		if($this->getE($a[$ln],0) == 'LX'){$ln++;}else{$this->badseg($ln); $check{'status'} = 'NO';}
 		if($this->getE($a[$ln],0) == 'CLP'){
